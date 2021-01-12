@@ -37,10 +37,13 @@ function createMainWindow() {
 
   state.manage(window);
 
-  protocol.registerFileProtocol("tunein", (req, callback) => {
+  protocol.registerFileProtocol("tunein", async (req, callback) => {
     const { code } = qs.parse(req.url, "?");
-    if (code) client.setCode(code as string);
-    client.closeLoginWindow();
+    if (code) {
+      client.setCode(code as string);
+      await client.init(code as string);
+      client.closeLoginWindow();
+    } else client.closeLoginWindow();
   });
 
   if (isDevelopment) {

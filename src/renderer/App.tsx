@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import ReactDOM from "react-dom";
 import { ipcRenderer } from "electron";
 import { io as socketIo } from "socket.io-client";
