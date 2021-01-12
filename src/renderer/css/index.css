@@ -1,0 +1,64 @@
+@import url("https://fonts.googleapis.com/css2?family=Varela&display=swap");
+
+body {
+  background-color: #2b2e2e;
+  color: white;
+  font-family: "Varela", sans-serif;
+  margin: 0px;
+  overflow: auto;
+}
+
+::-webkit-scrollbar {
+  display: block;
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #1b1b1b;
+  border-right: none;
+  border-left: none;
+}
+
+.titlebar {
+  position: fixed;
+  z-index: 999;
+  width: 100vw;
+  top: 0px;
+  -webkit-app-region: drag;
+}
+
+.titlebar .title {
+  font-weight: 500;
+  width: 100%;
+  text-align: center;
+  display: block;
+}
+
+.titlebar .button {
+  -webkit-app-region: no-drag;
+  position: absolute;
+  top: 0px;
+}
+
+.titlebar .button:hover {
+  /* cursor: pointer; */
+  background-color: rgb(112, 111, 111);
+}
+
+.titlebar .button.close {
+  right: 10px;
+}
+
+.titlebar .button.maximize {
+  right: 40px;
+}
+
+.titlebar .button.minimize {
+  right: 70px;
+  top: -3px;
+}
