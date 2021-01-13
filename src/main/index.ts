@@ -19,11 +19,11 @@ function createMainWindow() {
   const state = windowStateKeeper({});
 
   const window = new BrowserWindow({
-    width: 364,
-    height: 493,
+    width: 374,
+    height: 500,
     x: state.x,
     y: state.y,
-    resizable: true,
+    resizable: false,
     fullscreenable: false,
     frame: false,
     webPreferences: {
@@ -31,7 +31,7 @@ function createMainWindow() {
       webSecurity: true,
       enableRemoteModule: true,
       contextIsolation: false,
-      devTools: isDevelopment,
+      devTools: true
     },
   });
 
@@ -47,10 +47,9 @@ function createMainWindow() {
   });
 
   if (isDevelopment) {
-    // Force devtools into detached mode otherwise they are unusable
-    // window.webContents.openDevTools({
-    //   mode: "detach",
-    // });
+    window.webContents.openDevTools({
+      mode: "detach",
+    });
 
     window.loadURL(`http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}?version=DEV`);
   } else {

@@ -1,2 +1,2 @@
 import "./App";
-import "./css/index.css";
+import "./index.css";

@@ -38,13 +38,15 @@ body {
   display: block;
 }
 
-.titlebar .button {
+.titlebar .button,
+.titlebar-button {
   -webkit-app-region: no-drag;
   position: absolute;
   top: 0px;
 }
 
-.titlebar .button:hover {
+.titlebar .button:hover,
+.titlebar-button:hover {
   /* cursor: pointer; */
   background-color: rgb(112, 111, 111);
 }
@@ -53,11 +55,11 @@ body {
   right: 10px;
 }
 
-.titlebar .button.maximize {
-  right: 40px;
+.titlebar .button.minimize {
+  right: 35px;
+  top: -2px;
 }
 
-.titlebar .button.minimize {
-  right: 70px;
-  top: -3px;
+.titlebar .button.back {
+  left: 10px;
 }

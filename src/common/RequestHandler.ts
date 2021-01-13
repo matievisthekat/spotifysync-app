@@ -94,13 +94,6 @@ export default class RequestHandler {
     });
   }
 
-  public request(
-    method: "get" | "post" | "put",
-    url: string,
-    headers?: Record<string, string>,
-    data?: Record<string, any>
-  ) {}
-
   public setCode(code: string) {
     this.code = code;
   }

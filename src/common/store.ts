@@ -5,6 +5,7 @@ export interface StoreItems {
   refreshToken?: string;
   tokenExpiresMs: number;
   fetchedTimestamp: number;
+  connectionUrl?: string;
 }
 
 export default new Store<StoreItems>({

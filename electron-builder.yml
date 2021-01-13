@@ -1,0 +1,20 @@
+appId: com.tunein.app
+productName: TuneIn
+copyright: Copyright © 2021 ${author}
+directories:
+  output: build
+  buildResources: resources
+files:
+  - from: .
+    filter:
+      - package.json
+      - app
+win:
+  publish:
+    - github
+linux:
+  publish:
+    - github
+mac:
+  publish:
+    - github
