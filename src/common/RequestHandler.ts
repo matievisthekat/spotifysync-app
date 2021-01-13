@@ -54,6 +54,7 @@ export default class RequestHandler {
           enableRemoteModule: false,
           experimentalFeatures: false,
           allowRunningInsecureContent: false,
+          devTools: true,
         },
       });
 
