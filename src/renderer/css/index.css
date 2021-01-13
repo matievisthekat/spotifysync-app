@@ -1,9 +1,9 @@
-@import url("https://fonts.googleapis.com/css2?family=Varela&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
 
 body {
   background-color: #2b2e2e;
   color: white;
-  font-family: "Varela", sans-serif;
+  font-family: "Roboto", sans-serif;
   margin: 0px;
   overflow: auto;
 }
@@ -33,7 +33,6 @@ body {
 }
 
 .titlebar .title {
-  font-weight: 500;
   width: 100%;
   text-align: center;
   display: block;

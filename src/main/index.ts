@@ -19,8 +19,8 @@ function createMainWindow() {
   const state = windowStateKeeper({});
 
   const window = new BrowserWindow({
-    width: 1000,
-    height: 600,
+    width: 364,
+    height: 493,
     x: state.x,
     y: state.y,
     resizable: true,

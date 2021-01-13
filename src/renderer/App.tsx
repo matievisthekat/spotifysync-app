@@ -1,56 +1,140 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom";
-import { ipcRenderer } from "electron";
-import { io as socketIo } from "socket.io-client";
+import { io as socketIo, Socket } from "socket.io-client";
 import { css } from "@emotion/css";
 import { ThemeProvider } from "@material-ui/core";
 
 import TitleBar from "./components/TitleBar";
 import Container from "@material-ui/core/Container";
 import Button from "@material-ui/core/Button";
+import Input from "@material-ui/core/Input";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import Paper from "@material-ui/core/Paper";
+import LinearProgress from "@material-ui/core/LinearProgress";
 
-import { IpcMainMessages } from "../common/ipcMessages";
-import { client } from "../common/spotify";
+import Spotify from "../common/spotify-api";
+import { PlayingType, SocketState } from "../common/types";
 import theme from "./theme";
+import { grey } from "@material-ui/core/colors";
 
 const App: React.FC = () => {
-  const io = socketIo("http://localhost:3000");
+  const [url, setUrl] = useState("");
+  const [connecting, setConnecting] = useState(false);
+  const [connected, setConnected] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [track, setTrack] = useState<Spotify.TrackObjectFull | null>(null);
+  const [volume, setVolume] = useState<number | null>(0);
+  const [progress, setProgress] = useState<number | null>(0);
+  const [playingType, setPlayingType] = useState<PlayingType | null>("unknown");
 
-  io.connect()
-    .on("connect", () => console.log("socket connected"))
-    .on("initial_state", (state: any) => console.log("initial_state", state))
-    .on("track_change", (track: string) => console.log("track_change", track))
-    .on("seek", (progress: number, timestamp: number) => console.log("seek", progress, timestamp))
-    .on("playback_started", () => console.log("playback_started"))
-    .on("playback_paused", () => console.log("playback_paused"))
-    .on("device_change", (device: string) => console.log("device_change", device))
-    .on("volume_change", (volume: number) => console.log("volume_change", volume))
-    .on("track_end", () => console.log("track_end"))
-    .on("connect_error", (err: any) => console.error(err));
+  const progressPercent = track && progress ? (progress / track.duration_ms) * 100 : 0;
+
+  const connect = () => {
+    setConnecting(true);
+    const io = socketIo(url);
+    io.connect()
+      .on("connect_error", () => {
+        setError("Failed to connect.");
+        setConnecting(false);
+        setConnected(false);
+      })
+      .on("connect", () => {
+        setError(null);
+        setConnecting(false);
+        setConnected(true);
+      })
+      .on("disconnect", () => {
+        setSocket(null);
+        setConnected(false);
+      })
+      .on("initial_state", (state: SocketState) => {
+        setTrack(state.item);
+        setVolume(state.volume_percent);
+        setPlayingType(state.currently_playing_type);
+        setProgress(state.progress_ms);
+      })
+      .on("track_change", (_: any, newTrack: any) => setTrack(newTrack))
+      .on("volume_change", (_: number, newVol: number) => setVolume(newVol))
+      .on("progress_change", (_: number, newProg: number) => setProgress(newProg))
+      .on("currently_playing_type_change", (_: PlayingType, newType: PlayingType) => setPlayingType(newType));
+
+    setSocket(io);
+  };
+
+  const initialContent = (
+    <>
+      <Input
+        placeholder="Connection url"
+        value={url}
+        onChange={(e) => {
+          if (error) setError(null);
+          setUrl(e.target.value);
+        }}
+        color="secondary"
+        required
+        autoFocus
+      />
+      <br />
+      <br />
+      {connecting ? (
+        <CircularProgress size={30} />
+      ) : (
+        <Button variant="contained" color="secondary" onClick={() => connect()} disabled={!url}>
+          Connect
+        </Button>
+      )}
+    </>
+  );
 
   return (
     <ThemeProvider theme={theme}>
       <TitleBar />
       <Container
-        maxWidth="md"
         className={css`
           text-align: center;
         `}>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={() =>
-            ipcRenderer
-              .invoke(IpcMainMessages.LOGIN)
-              .then((success) => {
-                if (success) {
-                  io.emit("initiate", { accessToken: client.accessToken });
-                } else console.warn("A failed login occured!");
-              })
-              .catch(console.error)
-          }>
-          Login
-        </Button>
+        {connected ? (
+          <Paper
+            elevation={3}
+            className={css`
+              padding: ${theme.spacing(2)}px;
+              margin-top: -${theme.spacing(4)}px;
+            `}>
+            <img
+              src={playingType === "ad" ? "/spotify-logo.png" : track?.album.images[1].url}
+              className={css`
+                margin-bottom: ${theme.spacing(2)}px;
+              `}
+            />
+            <LinearProgress variant="determinate" value={progressPercent} style={{ marginBottom: "15px" }} />
+            <span
+              className={css`
+                color: ${grey[400]};
+              `}>
+              {track?.name}
+            </span>
+            <br />
+            <span
+              className={css`
+                color: ${grey[700]};
+              `}>
+              {track?.artists[0].name}
+            </span>
+          </Paper>
+        ) : (
+          initialContent
+        )}
+        <br />
+        <br />
+        {error && (
+          <span
+            className={css`
+              color: red;
+            `}>
+            {error}
+          </span>
+        )}
       </Container>
     </ThemeProvider>
   );

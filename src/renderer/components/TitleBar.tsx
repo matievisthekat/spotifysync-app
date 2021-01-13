@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { remote } from "electron";
 import { grey } from "@material-ui/core/colors";
 
@@ -21,7 +21,10 @@ const buttonStyle = { height, color: theme.palette.grey[300] };
 const TitleBar: React.FC = () => {
   const current = remote.getCurrentWindow();
   const [maximized, setMaximized] = useState(current.isMaximized());
-  current.on("maximize", () => setMaximized(true)).on("unmaximize", () => setMaximized(false));
+
+  useEffect(() => {
+    current.on("maximize", () => setMaximized(true)).on("unmaximize", () => setMaximized(false));
+  }, []);
 
   return (
     <>
