@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { io as socketIo, Socket } from "socket.io-client";
 import { css } from "@emotion/css";
 import { ThemeProvider } from "@material-ui/core";
+import { ipcRenderer } from "electron";
 
 import TitleBar from "./TitleBar";
 import Container from "@material-ui/core/Container";
@@ -17,6 +18,8 @@ import { PlayingType, SocketState } from "../common/types";
 import theme from "./theme";
 import store from "../common/store";
 import { grey } from "@material-ui/core/colors";
+import { client } from "../common/spotify";
+import { IpcMainMessages } from "../common/ipcMessages";
 
 const App: React.FC = () => {
   const [url, setUrl] = useState("");
@@ -31,8 +34,16 @@ const App: React.FC = () => {
 
   const progressPercent = track && progress ? (progress / track.duration_ms) * 100 : 0;
 
-  const connect = () => {
+  const connect = async () => {
     setConnecting(true);
+    store.set("connectionUrl", url);
+
+    const user = await client.getUser();
+    console.log(user);
+    if (user.product !== "premium") {
+      setConnecting(false);
+      return setError("Spotify premium is required for this app to function");
+    }
 
     const io = socketIo(url);
     io.connect()
@@ -61,7 +72,14 @@ const App: React.FC = () => {
         setPlayingType(state.currently_playing_type);
         setProgress(state.progress_ms);
       })
-      .on("track_change", (_: any, newTrack: any) => setTrack(newTrack))
+      .on("track_change", async (_: Spotify.TrackObjectFull | null, newTrack: Spotify.TrackObjectFull | null) => {
+        if (newTrack) {
+          await client.pushTrackToQueue(newTrack.uri);
+          await client.next();
+        }
+
+        setTrack(newTrack);
+      })
       .on("volume_change", (_: number, newVol: number) => setVolume(newVol))
       .on("progress_change", (_: number, newProg: number) => setProgress(newProg))
       .on("currently_playing_type_change", (_: PlayingType, newType: PlayingType) => setPlayingType(newType));
@@ -90,7 +108,15 @@ const App: React.FC = () => {
       {connecting ? (
         <CircularProgress size={30} />
       ) : (
-        <Button variant="contained" color="secondary" onClick={() => connect()} disabled={!url}>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => {
+            const loggedIn = !!client.accessToken;
+            if (!loggedIn) ipcRenderer.invoke(IpcMainMessages.LOGIN).then(() => connect());
+            else connect();
+          }}
+          disabled={!url}>
           Connect
         </Button>
       )}

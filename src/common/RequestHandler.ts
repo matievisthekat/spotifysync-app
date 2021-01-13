@@ -1,7 +1,10 @@
 import Axios from "axios";
 import { BrowserWindow } from "electron";
 import qs from "querystring";
+import Spotify from "./spotify-api";
 import store from "./store";
+
+const API = "https://api.spotify.com/v1";
 
 export interface RequestHandlerOptions {
   clientId: string;
@@ -84,12 +87,88 @@ export default class RequestHandler {
           this.log(refresh ? "Refreshed tokens" : "Fetched tokens");
 
           this.accessToken = res.data.access_token;
-          this.refreshToken = res.data.refresh_token;
           this.tokenExpiresMs = res.data.expires_in * 1000;
           this.fetchedTimestamp = Date.now();
 
           resolve();
         })
+        .catch(reject);
+    });
+  }
+
+  public getUser() {
+    return new Promise<Spotify.UserObjectPrivate>(async (resolve, reject) => {
+      if (this.tokenExpired) await this.init("", true);
+      Axios.get<Spotify.UserObjectPrivate>(`${API}/me`, {
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+        },
+      })
+        .then((res) => resolve(res.data))
+        .catch(reject);
+    });
+  }
+
+  public next() {
+    return new Promise<void>(async (resolve, reject) => {
+      if (this.tokenExpired) await this.init("", true);
+      Axios.post(
+        `${API}/me/player/next`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${this.accessToken}`,
+          },
+        }
+      )
+        .then(() => resolve())
+        .catch(reject);
+    });
+  }
+
+  public pushTrackToQueue(uri: string) {
+    return new Promise<void>(async (resolve, reject) => {
+      if (this.tokenExpired) await this.init("", true);
+      Axios.post<Spotify.UserObjectPrivate>(`${API}/me/player/queue`, qs.stringify({ uri }), {
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+        },
+      })
+        .then(() => resolve())
+        .catch(reject);
+    });
+  }
+
+  public pause() {
+    return new Promise<void>(async (resolve, reject) => {
+      if (this.tokenExpired) await this.init("", true);
+      Axios.put(
+        `${API}/me/player/pause`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${this.accessToken}`,
+          },
+        }
+      )
+        .then(() => resolve())
+        .catch(reject);
+    });
+  }
+
+  public resume() {
+    return new Promise<void>(async (resolve, reject) => {
+      if (this.tokenExpired) await this.init("", true);
+      Axios.put(
+        `${API}/me/player/play`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${this.accessToken}`,
+          },
+        }
+      )
+        .then(() => resolve())
         .catch(reject);
     });
   }
@@ -119,7 +198,7 @@ export default class RequestHandler {
   }
 
   public get tokenExpired() {
-    return this.fetchedTimestamp + this.tokenExpiresMs >= Date.now();
+    return this.fetchedTimestamp + this.tokenExpiresMs <= Date.now();
   }
 
   public get authUrl() {
