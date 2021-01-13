@@ -20,18 +20,19 @@ function createMainWindow() {
 
   const window = new BrowserWindow({
     width: 374,
-    height: 500,
+    height: 530,
     x: state.x,
     y: state.y,
     resizable: false,
     fullscreenable: false,
+    maximizable: false,
     frame: false,
     webPreferences: {
       nodeIntegration: true,
       webSecurity: true,
       enableRemoteModule: true,
       contextIsolation: false,
-      devTools: true
+      devTools: true,
     },
   });
 

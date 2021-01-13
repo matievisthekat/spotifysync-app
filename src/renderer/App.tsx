@@ -12,6 +12,8 @@ import Input from "@material-ui/core/Input";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Paper from "@material-ui/core/Paper";
 import LinearProgress from "@material-ui/core/LinearProgress";
+import PlayCircleOutlineIcon from "@material-ui/icons/PlayCircleOutline";
+import PauseCircleOutlineIcon from "@material-ui/icons/PauseCircleOutline";
 
 import Spotify from "../common/spotify-api";
 import { PlayingType, SocketState } from "../common/types";
@@ -28,22 +30,15 @@ const App: React.FC = () => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [track, setTrack] = useState<Spotify.TrackObjectFull | null>(null);
-  const [volume, setVolume] = useState<number | null>(0);
   const [progress, setProgress] = useState<number | null>(0);
   const [playingType, setPlayingType] = useState<PlayingType | null>("unknown");
+  const [isPlaying, setIsPlaying] = useState<boolean | null>(false);
 
   const progressPercent = track && progress ? (progress / track.duration_ms) * 100 : 0;
 
   const connect = async () => {
     setConnecting(true);
     store.set("connectionUrl", url);
-
-    const user = await client.getUser();
-    console.log(user);
-    if (user.product !== "premium") {
-      setConnecting(false);
-      return setError("Spotify premium is required for this app to function");
-    }
 
     const io = socketIo(url);
     io.connect()
@@ -68,21 +63,26 @@ const App: React.FC = () => {
       })
       .on("initial_state", (state: SocketState) => {
         setTrack(state.item);
-        setVolume(state.volume_percent);
         setPlayingType(state.currently_playing_type);
         setProgress(state.progress_ms);
+        setIsPlaying(state.is_playing);
       })
       .on("track_change", async (_: Spotify.TrackObjectFull | null, newTrack: Spotify.TrackObjectFull | null) => {
-        if (newTrack) {
-          await client.pushTrackToQueue(newTrack.uri);
-          await client.next();
-        }
-
         setTrack(newTrack);
+
+        if (newTrack) {
+          await client
+            .pushTrackToQueue(newTrack.uri)
+            .then(async () => await client.next().catch((err) => {}))
+            .catch((err) => {});
+        }
       })
-      .on("volume_change", (_: number, newVol: number) => setVolume(newVol))
-      .on("progress_change", (_: number, newProg: number) => setProgress(newProg))
-      .on("currently_playing_type_change", (_: PlayingType, newType: PlayingType) => setPlayingType(newType));
+      .on("is_playing_change", (_: boolean, playing: boolean) => setIsPlaying(playing))
+      .on("progress_change", (_: number, progress: number) => setProgress(progress))
+      .on("currently_playing_type_change", (_: PlayingType, type: PlayingType) => setPlayingType(type));
+
+    const user = await client.getUser();
+    if (user.product !== "premium") setError("Premium is required to sync music with your account");
   };
 
   useEffect(() => {
@@ -163,11 +163,19 @@ const App: React.FC = () => {
               `}>
               {track?.artists[0].name || "Spotify"}
             </span>
+            {!isPlaying ? (
+              <PlayCircleOutlineIcon className="is-playing-icon" fontSize="large" />
+            ) : (
+              <PauseCircleOutlineIcon className="is-playing-icon" fontSize="large" />
+            )}
           </Paper>
         ) : (
-          initialContent
+          <>
+            {initialContent}
+            <br />
+          </>
         )}
-        <br />
+
         <br />
         {error && (
           <span

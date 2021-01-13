@@ -1,7 +1,8 @@
 import Axios from "axios";
 import { createHash, randomBytes } from "crypto";
-import { BrowserWindow } from "electron";
+import { ipcRenderer, BrowserWindow } from "electron";
 import qs from "querystring";
+import { IpcMainMessages } from "./ipcMessages";
 import Spotify from "./spotify-api";
 import store from "./store";
 
@@ -28,7 +29,6 @@ export default class RequestHandler {
   private scope?: string[];
   private loginWindow?: BrowserWindow;
   private code?: string;
-  private codeVerifier?: string;
 
   constructor(opts: RequestHandlerOptions) {
     this.clientId = opts.clientId;
@@ -38,6 +38,8 @@ export default class RequestHandler {
 
   public login() {
     return new Promise<boolean>((resolve, reject) => {
+      const url = this.authUrl;
+
       this.loginWindow = new BrowserWindow({
         width: 550,
         height: 650,
@@ -55,7 +57,7 @@ export default class RequestHandler {
         },
       });
 
-      this.loginWindow.loadURL(this.authUrl);
+      this.loginWindow.loadURL(url);
 
       this.loginWindow.on("close", () => {
         if (this.code) resolve(true);
@@ -70,13 +72,13 @@ export default class RequestHandler {
 
   public init(code: string, refresh?: boolean) {
     return new Promise<void>((resolve, reject) => {
-      if (refresh && !this.refreshToken) return this.login();
+      if (refresh && !this.refreshToken) return ipcRenderer.invoke(IpcMainMessages.LOGIN);
 
       const data = {
         grant_type: refresh ? "refresh_token" : "authorization_code",
         redirect_uri: this.redirectUri as string,
         [refresh ? "refresh_token" : "code"]: refresh ? (this.refreshToken as string) : code,
-        code_verifier: this.codeVerifier,
+        code_verifier: store.get("codeVerifier"),
         client_id: this.clientId,
       };
 
@@ -202,13 +204,15 @@ export default class RequestHandler {
   }
 
   public get authUrl() {
-    this.codeVerifier = randomBytes(50).toString("hex");
+    const codeVerifier = randomBytes(50).toString("hex");
     const codeChallenge = createHash("sha256")
-      .update(this.codeVerifier)
+      .update(codeVerifier)
       .digest("base64")
       .replace(/\+/g, "-")
       .replace(/\//g, "_")
       .replace(/=+$/, "");
+
+    store.set("codeVerifier", codeVerifier);
 
     return `https://accounts.spotify.com/authorize?client_id=${this.clientId}&redirect_uri=${
       this.redirectUri

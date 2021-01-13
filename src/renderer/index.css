@@ -63,3 +63,10 @@ body {
 .titlebar .button.back {
   left: 10px;
 }
+
+.is-playing-icon {
+  position: absolute;
+  left: 47%;
+  top: 38%;
+  color: #e0e0e0;
+}

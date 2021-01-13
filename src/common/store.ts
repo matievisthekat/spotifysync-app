@@ -6,6 +6,7 @@ export interface StoreItems {
   tokenExpiresMs: number;
   fetchedTimestamp: number;
   connectionUrl?: string;
+  codeVerifier?: string;
 }
 
 export default new Store<StoreItems>({
