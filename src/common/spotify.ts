@@ -2,8 +2,7 @@ import RequestHandler from "./RequestHandler";
 
 const redirectUri = "tunein://callback";
 export const client = new RequestHandler({
-  clientId: process.env.CLIENT_ID,
-  clientSecret: process.env.CLIENT_SECRET,
+  clientId: "416bb0c81cc142268ee15c8382b1ca79",
   redirectUri,
   scope: ["user-read-playback-state", "user-modify-playback-state", "user-read-private"],
 });

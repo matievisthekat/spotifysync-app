@@ -1,4 +1,5 @@
 import Axios from "axios";
+import { createHash, randomBytes } from "crypto";
 import { BrowserWindow } from "electron";
 import qs from "querystring";
 import Spotify from "./spotify-api";
@@ -8,7 +9,6 @@ const API = "https://api.spotify.com/v1";
 
 export interface RequestHandlerOptions {
   clientId: string;
-  clientSecret: string;
   redirectUri: string;
   scope: string[];
 }
@@ -23,18 +23,15 @@ export interface TokenResponse {
 
 export default class RequestHandler {
   public verbose = false;
-  private basic?: string;
   private clientId?: string;
-  private clientSecret?: string;
   private redirectUri?: string;
   private scope?: string[];
   private loginWindow?: BrowserWindow;
   private code?: string;
+  private codeVerifier?: string;
 
   constructor(opts: RequestHandlerOptions) {
     this.clientId = opts.clientId;
-    this.clientSecret = opts.clientSecret;
-    this.basic = Buffer.from(`${this.clientId}:${this.clientSecret}`).toString("base64");
     this.redirectUri = opts.redirectUri;
     this.scope = opts.scope;
   }
@@ -73,27 +70,29 @@ export default class RequestHandler {
 
   public init(code: string, refresh?: boolean) {
     return new Promise<void>((resolve, reject) => {
+      if (refresh && !this.refreshToken) return this.login();
+
       const data = {
         grant_type: refresh ? "refresh_token" : "authorization_code",
         redirect_uri: this.redirectUri as string,
         [refresh ? "refresh_token" : "code"]: refresh ? (this.refreshToken as string) : code,
+        code_verifier: this.codeVerifier,
+        client_id: this.clientId,
       };
 
-      Axios.post<TokenResponse>("https://accounts.spotify.com/api/token", qs.stringify(data), {
-        headers: {
-          Authorization: `Basic ${this.basic}`,
-        },
-      })
+      Axios.post<TokenResponse>("https://accounts.spotify.com/api/token", qs.stringify(data))
         .then((res) => {
           this.log(refresh ? "Refreshed tokens" : "Fetched tokens");
 
           this.accessToken = res.data.access_token;
           this.tokenExpiresMs = res.data.expires_in * 1000;
           this.fetchedTimestamp = Date.now();
+          if (refresh) store.delete("refreshToken");
+          else this.refreshToken = res.data.refresh_token;
 
           resolve();
         })
-        .catch(reject);
+        .catch((err) => console.log(err));
     });
   }
 
@@ -203,9 +202,19 @@ export default class RequestHandler {
   }
 
   public get authUrl() {
+    this.codeVerifier = randomBytes(50).toString("hex");
+    const codeChallenge = createHash("sha256")
+      .update(this.codeVerifier)
+      .digest("base64")
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, "");
+
     return `https://accounts.spotify.com/authorize?client_id=${this.clientId}&redirect_uri=${
       this.redirectUri
-    }&scope=${this.scope?.join("%20")}&response_type=code&show_dialog=true`;
+    }&scope=${this.scope?.join(
+      "%20"
+    )}&response_type=code&show_dialog=true&code_challenge_method=S256&code_challenge=${codeChallenge}`;
   }
 
   public set accessToken(v: string | undefined) {
