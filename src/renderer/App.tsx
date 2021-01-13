@@ -43,10 +43,12 @@ const App: React.FC = () => {
     const io = socketIo(url);
     io.connect()
       .on("connect_error", (err: any) => {
-        console.error(err);
-        setError("Failed to connect.");
-        setConnecting(false);
-        setConnected(false);
+        if (!io.connected) {
+          console.error(err);
+          setError("Failed to connect.");
+          setConnecting(false);
+          setConnected(false);
+        }
       })
       .on("connect", () => {
         console.log("WebSocket connected");
@@ -60,6 +62,8 @@ const App: React.FC = () => {
         setError("Disconnected from server");
         setConnected(false);
         setSocket(null);
+
+        setTimeout(() => io.connect(), 1500);
       })
       .on("initial_state", (state: SocketState) => {
         setTrack(state.item);
