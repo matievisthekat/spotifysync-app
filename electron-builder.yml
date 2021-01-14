@@ -12,9 +12,17 @@ files:
 win:
   publish:
     - github
+  target: nsis
+  publisherName: "Matthew Stead"
 linux:
   publish:
     - github
 mac:
   publish:
     - github
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  installerIcon: "installer-icon.ico"
+  uninstallerIcon: "installer-icon.ico"
