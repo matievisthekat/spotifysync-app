@@ -64,6 +64,10 @@ body {
   left: 10px;
 }
 
+.titlebar .button.logout {
+  right: 60px;
+}
+
 .is-playing-icon {
   position: absolute;
   left: 47%;

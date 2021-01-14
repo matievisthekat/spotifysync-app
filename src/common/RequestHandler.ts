@@ -133,11 +133,15 @@ export default class RequestHandler {
   public pushTrackToQueue(uri: string) {
     return new Promise<void>(async (resolve, reject) => {
       if (this.tokenExpired) await this.init("", true);
-      Axios.post<Spotify.UserObjectPrivate>(`${API}/me/player/queue`, qs.stringify({ uri }), {
-        headers: {
-          Authorization: `Bearer ${this.accessToken}`,
-        },
-      })
+      Axios.post(
+        `${API}/me/player/queue?uri=${uri}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${this.accessToken}`,
+          },
+        }
+      )
         .then(() => resolve())
         .catch(reject);
     });
@@ -202,6 +206,7 @@ export default class RequestHandler {
   }
 
   public get tokenExpired() {
+    if (!this.accessToken) return false;
     return this.fetchedTimestamp + this.tokenExpiresMs <= Date.now();
   }
 

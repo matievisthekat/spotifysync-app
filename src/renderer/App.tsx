@@ -23,6 +23,8 @@ import { grey } from "@material-ui/core/colors";
 import { client } from "../common/spotify";
 import { IpcMainMessages } from "../common/ipcMessages";
 
+const noActiveDevice = "No active device found. Make sure to open Spotify and start playing a track"
+
 const App: React.FC = () => {
   const [url, setUrl] = useState("");
   const [connecting, setConnecting] = useState(false);
@@ -43,7 +45,7 @@ const App: React.FC = () => {
     const io = socketIo(url);
     io.connect()
       .on("connect_error", (err: any) => {
-        if (!connected) {
+        if (!connected && !connecting) {
           console.error(err);
           setError("Failed to connect.");
           setConnecting(false);
@@ -78,11 +80,29 @@ const App: React.FC = () => {
         if (newTrack) {
           await client
             .pushTrackToQueue(newTrack.uri)
-            .then(async () => await client.next().catch((err) => {}))
-            .catch((err) => {});
+            .then(async () => {
+              if (progressPercent < 99) await client.next().catch((err) => console.log("next():", err.response));
+            })
+            .catch((err) => {
+              console.log("pushTrackToQueue():", err.response);
+              if (err.response?.data?.error?.reason === "NO_ACTIVE_DEVICE") setError(noActiveDevice);
+            });
         }
       })
-      .on("is_playing_change", (_: boolean, playing: boolean) => setIsPlaying(playing))
+      .on("is_playing_change", async (old: boolean, playing: boolean) => {
+        setIsPlaying(playing);
+
+        if (playing === true && !old)
+          await client.resume().catch((err) => {
+            console.log("resume():", err.response);
+            if (err.response?.data?.error?.reason === "NO_ACTIVE_DEVICE") setError(noActiveDevice);
+          });
+        else if (playing === false && old === true)
+          await client.pause().catch((err) => {
+            console.log("pause():", err.response);
+            if (err.response?.data?.error?.reason === "NO_ACTIVE_DEVICE") setError(noActiveDevice);
+          });
+      })
       .on("progress_change", (_: number, progress: number) => setProgress(progress))
       .on("currently_playing_type_change", (_: PlayingType, type: PlayingType) => setPlayingType(type));
   };
@@ -127,7 +147,7 @@ const App: React.FC = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <TitleBar showBack={connected} back={() => (socket ? socket.disconnect() : undefined)} />
+      <TitleBar showBack={connected} disconnect={() => (socket ? socket.disconnect() : undefined)} />
       <Container
         className={css`
           text-align: center;
