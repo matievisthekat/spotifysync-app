@@ -43,19 +43,22 @@ const App: React.FC = () => {
     const io = socketIo(url);
     io.connect()
       .on("connect_error", (err: any) => {
-        if (!io.connected) {
+        if (!connected) {
           console.error(err);
           setError("Failed to connect.");
           setConnecting(false);
           setConnected(false);
         }
       })
-      .on("connect", () => {
+      .on("connect", async () => {
         console.log("WebSocket connected");
         setError(null);
         setConnecting(false);
         setConnected(true);
         setSocket(io);
+
+        const user = await client.getUser();
+        if (user.product !== "premium") setError("Premium is required to sync music with your account");
       })
       .on("disconnect", () => {
         console.log("WebSocket disconnected");
@@ -82,9 +85,6 @@ const App: React.FC = () => {
       .on("is_playing_change", (_: boolean, playing: boolean) => setIsPlaying(playing))
       .on("progress_change", (_: number, progress: number) => setProgress(progress))
       .on("currently_playing_type_change", (_: PlayingType, type: PlayingType) => setPlayingType(type));
-
-    const user = await client.getUser();
-    if (user.product !== "premium") setError("Premium is required to sync music with your account");
   };
 
   useEffect(() => {

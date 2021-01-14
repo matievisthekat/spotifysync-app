@@ -45,6 +45,7 @@ function createMainWindow() {
       await client.init(code as string);
       client.closeLoginWindow();
     } else client.closeLoginWindow();
+    callback("");
   });
 
   if (isDevelopment) {
