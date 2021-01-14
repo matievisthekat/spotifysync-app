@@ -1,6 +1,6 @@
 {
   "name": "tunein-app",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "An app to sync spotify playing between people",
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
