@@ -72,6 +72,7 @@ export default class RequestHandler {
 
   public init(code: string, refresh?: boolean) {
     return new Promise<void>((resolve, reject) => {
+      if (this.loginWindow) return;
       if (refresh && !this.refreshToken) return ipcRenderer.invoke(IpcMainMessages.LOGIN);
 
       const data = {

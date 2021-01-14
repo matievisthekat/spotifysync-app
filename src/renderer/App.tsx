@@ -62,8 +62,6 @@ const App: React.FC = () => {
         setError("Disconnected from server");
         setConnected(false);
         setSocket(null);
-
-        setTimeout(() => io.connect(), 1500);
       })
       .on("initial_state", (state: SocketState) => {
         setTrack(state.item);
