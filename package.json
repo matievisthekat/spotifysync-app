@@ -5,8 +5,8 @@
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
     "dev": "electron-webpack dev",
-    "compile": "electron-webpack",
-    "build": "yarn compile && electron-builder"
+    "build": "electron-webpack",
+    "builder": "yarn build && electron-builder"
   },
   "author": "Mathew Stead <matthew.stead@matievisthekat.dev>",
   "license": "GPL-3.0",
