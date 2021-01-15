@@ -8,8 +8,10 @@ import { format as formatUrl } from "url";
 import { ProgressInfo } from "builder-util-runtime";
 import qs from "querystring";
 import { IpcRendererMessages } from "../common/ipcMessages";
-import "./ipcHandlers";
 import { client } from "../common/spotify";
+import { Client } from "discord-rpc";
+import store from "../common/store";
+import "./ipcHandlers";
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
@@ -141,3 +143,39 @@ if (!locked) {
     mainWindow = createMainWindow();
   });
 }
+
+const rpc = new Client({ transport: "ipc" });
+
+function setActivity() {
+  const track = store.get("track");
+  const artist = store.get("artist");
+  const progress = store.get("progress");
+  const duration = store.get("duration");
+  const isPlaying = store.get("isPlaying");
+  const playingType = store.get("playingType");
+  const connected = store.get("connected");
+  const connectionUrl = store.get("connectionUrl");
+
+  const presence = connected
+    ? {
+        details: playingType === "ad" ? "Advertisement" : track,
+        state: `by ${artist}`,
+        startTimestamp: Date.now() - (duration - progress),
+        endTimestamp: Date.now() + (duration - progress),
+        largeImageKey: "icon_1024x1024",
+        largeImageText: connectionUrl,
+        smallImageKey: isPlaying ? "pause_512x512" : "play_512x512",
+        smallImageText: isPlaying ? "Playing" : "Paused",
+        instance: false,
+      }
+    : {};
+
+  rpc.setActivity(presence);
+}
+
+rpc.on("ready", () => {
+  setActivity();
+  setInterval(() => setActivity(), 15e3);
+});
+
+rpc.login({ clientId: "799582207479775273" });

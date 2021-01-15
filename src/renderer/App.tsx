@@ -23,18 +23,23 @@ import { grey } from "@material-ui/core/colors";
 import { client } from "../common/spotify";
 import { IpcMainMessages } from "../common/ipcMessages";
 
-const noActiveDevice = "No active device found. Make sure to open Spotify and start playing a track"
+const noActiveDevice = "No active device found. Make sure to open Spotify and start playing a track";
 
 const App: React.FC = () => {
   const [url, setUrl] = useState("");
   const [connecting, setConnecting] = useState(false);
-  const [connected, setConnected] = useState(false);
+  const [connected, _setConnected] = useState(false);
   const [socket, setSocket] = useState<Socket | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [track, setTrack] = useState<Spotify.TrackObjectFull | null>(null);
   const [progress, setProgress] = useState<number | null>(0);
   const [playingType, setPlayingType] = useState<PlayingType | null>("unknown");
   const [isPlaying, setIsPlaying] = useState<boolean | null>(false);
+
+  const setConnected = (c: boolean) => {
+    store.set("connected", c);
+    _setConnected(c);
+  };
 
   const progressPercent = track && progress ? (progress / track.duration_ms) * 100 : 0;
 
@@ -74,12 +79,12 @@ const App: React.FC = () => {
         setProgress(state.progress_ms);
         setIsPlaying(state.is_playing);
       })
-      .on("track_change", async (_: Spotify.TrackObjectFull | null, newTrack: Spotify.TrackObjectFull | null) => {
-        setTrack(newTrack);
+      .on("track_change", async (_: Spotify.TrackObjectFull | null, track: Spotify.TrackObjectFull | null) => {
+        setTrack(track);
 
-        if (newTrack) {
+        if (track) {
           await client
-            .pushTrackToQueue(newTrack.uri)
+            .pushTrackToQueue(track.uri)
             .then(async () => {
               if (progressPercent < 99) await client.next().catch((err) => console.log("next():", err.response));
             })
@@ -87,24 +92,46 @@ const App: React.FC = () => {
               console.log("pushTrackToQueue():", err.response);
               if (err.response?.data?.error?.reason === "NO_ACTIVE_DEVICE") setError(noActiveDevice);
             });
+
+          store.set("track", track.name);
+          store.set("artist", track.artists[0].name);
+          store.set("duration", track.duration_ms);
+        } else {
+          store.delete("track");
+          store.delete("artist");
+          store.delete("duration");
         }
       })
       .on("is_playing_change", async (old: boolean, playing: boolean) => {
         setIsPlaying(playing);
 
-        if (playing === true && !old)
+        if (playing === true && !old) {
           await client.resume().catch((err) => {
             console.log("resume():", err.response);
             if (err.response?.data?.error?.reason === "NO_ACTIVE_DEVICE") setError(noActiveDevice);
           });
-        else if (playing === false && old === true)
+        } else if (playing === false && old === true) {
           await client.pause().catch((err) => {
             console.log("pause():", err.response);
             if (err.response?.data?.error?.reason === "NO_ACTIVE_DEVICE") setError(noActiveDevice);
           });
+        }
+
+        if (playing) store.set("isPlaying", playing);
+        else store.delete("isPlaying");
       })
-      .on("progress_change", (_: number, progress: number) => setProgress(progress))
-      .on("currently_playing_type_change", (_: PlayingType, type: PlayingType) => setPlayingType(type));
+      .on("progress_change", (_: number, progress: number) => {
+        setProgress(progress);
+
+        if (progress) store.set("progress", progress);
+        else store.delete("progress");
+      })
+      .on("currently_playing_type_change", (_: PlayingType, type: PlayingType) => {
+        setPlayingType(type);
+
+        if (type) store.set("playingType", type);
+        else store.delete("playingType");
+      });
   };
 
   useEffect(() => {
