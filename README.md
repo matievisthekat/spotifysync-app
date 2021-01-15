@@ -1,6 +1,6 @@
 # TuneIn
 
-A desktop app used to connect to any [TuneIn server](https://github.com/MatievisTheKat/tunein-server) via a HTTP url
+A desktop app used to connect to any [TuneIn server](https://github.com/MatievisTheKat/tunein-server) via a HTTP url. TuneIn allows to you sync your Spotify client with any TuneIn server so that you can listen to the same music as the person running the server is listening to
 
 ## Installation
 
