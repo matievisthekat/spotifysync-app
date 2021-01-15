@@ -1,6 +1,6 @@
 {
   "name": "spotifysync-app",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "An app to sync spotify playing between people",
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
