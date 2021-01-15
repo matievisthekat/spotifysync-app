@@ -36,7 +36,7 @@ const TitleBar: React.FC<Props> = ({ showBack, disconnect }) => {
     <>
       <div className="titlebar" style={{ height, backgroundColor: grey[900] }}>
         <span className="title" style={{ height, lineHeight: `${height}px`, color: theme.palette.primary.main }}>
-          TuneIn{version}
+          SpotifySync{version}
         </span>
         {showBack && (
           <Tooltip title="Back" arrow>

@@ -1,6 +1,6 @@
 import RequestHandler from "./RequestHandler";
 
-const redirectUri = "tunein://callback";
+const redirectUri = "spotifysync://callback";
 export const client = new RequestHandler({
   clientId: "416bb0c81cc142268ee15c8382b1ca79",
   redirectUri,

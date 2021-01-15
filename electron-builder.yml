@@ -1,5 +1,5 @@
-appId: com.tunein.app
-productName: TuneIn
+appId: com.spotifysync.app
+productName: SpotifySync
 copyright: Copyright © 2021 ${author}
 directories:
   output: build

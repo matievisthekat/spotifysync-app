@@ -40,7 +40,7 @@ function createMainWindow() {
 
   state.manage(window);
 
-  protocol.registerFileProtocol("tunein", async (req, callback) => {
+  protocol.registerFileProtocol("spotifysync", async (req, callback) => {
     const { code } = qs.parse(req.url, "?");
     if (code) {
       client.setCode(code as string);

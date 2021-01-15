@@ -1,5 +1,5 @@
 {
-  "name": "tunein-app",
+  "name": "spotifysync-app",
   "version": "1.0.4",
   "description": "An app to sync spotify playing between people",
   "scripts": {
