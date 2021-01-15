@@ -160,8 +160,8 @@ function setActivity() {
     ? {
         details: playingType === "ad" ? "Advertisement" : track,
         state: `by ${artist}`,
-        startTimestamp: Date.now() - (duration - progress),
-        endTimestamp: Date.now() + (duration - progress),
+        startTimestamp: isPlaying ? Date.now() - (duration - progress) : undefined,
+        endTimestamp: isPlaying ? Date.now() + (duration - progress) : undefined,
         largeImageKey: "icon_1024x1024",
         largeImageText: connectionUrl,
         smallImageKey: isPlaying ? "pause_512x512" : "play_512x512",
