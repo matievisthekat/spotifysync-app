@@ -15,7 +15,7 @@ const TitleBar: React.FC<Props> = ({ version }) => {
     <>
       <div className="titlebar" style={{ height, backgroundColor: grey[900] }}>
         <span className="title" style={{ height, lineHeight: `${height}px`, color: theme.palette.primary.main }}>
-          TuneIn {version}
+          SpotifySync {version}
         </span>
       </div>
       <div style={{ marginBottom: `${theme.spacing(5)}px` }}></div>

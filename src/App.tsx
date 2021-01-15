@@ -15,7 +15,7 @@ const App: React.FC = () => {
   const [latest, setLatest] = useState<any>(undefined);
 
   useEffect(() => {
-    Axios.get("https://api.github.com/repos/MatievisTheKat/tunein-app/releases")
+    Axios.get("https://api.github.com/repos/MatievisTheKat/spotifysync-app/releases")
       .then((res) => setLatest(res.data[0]))
       .catch(console.error);
   }, []);
@@ -39,32 +39,32 @@ const App: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>TuneIn {latest ? latest.tag_name : ""}</title>
+        <title>SpotifySync {latest ? latest.tag_name : ""}</title>
       </Helmet>
       <ThemeProvider theme={theme}>
         <TitleBar version={latest?.tag_name} />
         <Container maxWidth="md">
           <span>
-            The TuneIn app allows anyone to connect to a{" "}
-            <a href="https://github.com/MatievisTheKat/tunein-server" rel="noreferrer" target="_blank">
-              TuneIn Server
+            The SpotifySync app allows anyone to connect to a{" "}
+            <a href="https://github.com/MatievisTheKat/spotifysync-server" rel="noreferrer" target="_blank">
+              SpotifySync Server
             </a>{" "}
             via a HTTP(s) URL.
             <br />A{" "}
-            <a href="https://github.com/MatievisTheKat/tunein-server" rel="noreferrer" target="_blank">
-              TuneIn Server
+            <a href="https://github.com/MatievisTheKat/spotifysync-server" rel="noreferrer" target="_blank">
+              SpotifySync Server
             </a>{" "}
             will periodically broadcast updates on the set user's Spotify track, progress, etc to all connected clients.
             <br />
             Each{" "}
-            <a href="https://github.com/MatievisTheKat/tunein-server" rel="noreferrer" target="_blank">
-              TuneIn Server
+            <a href="https://github.com/MatievisTheKat/spotifysync-server" rel="noreferrer" target="_blank">
+              SpotifySync Server
             </a>{" "}
             can only send updates for <strong>one</strong> Spotify user at a time
             <br />
             So if you want to broadcast what you're listening to on Spotify to anyone you will need to set up your own
-            <a href="https://github.com/MatievisTheKat/tunein-server" rel="noreferrer" target="_blank">
-              TuneIn Server
+            <a href="https://github.com/MatievisTheKat/spotifysync-server" rel="noreferrer" target="_blank">
+              SpotifySync Server
             </a>
           </span>
           <br />
@@ -80,7 +80,7 @@ const App: React.FC = () => {
             href={
               assets && assets[osName]
                 ? assets[osName].browser_download_url
-                : "https://github.com/MatievisTheKat/tunein-app/releases/latest"
+                : "https://github.com/MatievisTheKat/spotifysync-app/releases/latest"
             }>
             Download{assets && assets[osName] ? ` for ${osName}` : ""}
           </Button>

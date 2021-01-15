@@ -1,7 +1,7 @@
 {
-  "name": "tunein-site",
+  "name": "spotifysync-site",
   "version": "0.1.0",
-  "homepage": "https://matievisthekat.github.io/tunein-app",
+  "homepage": "https://matievisthekat.github.io/spotifysync-app",
   "dependencies": {
     "@material-ui/core": "^4.11.2",
     "@types/node": "^12.0.0",
