@@ -62,7 +62,7 @@ const App: React.FC = () => {
             </a>{" "}
             can only send updates for <strong>one</strong> Spotify user at a time
             <br />
-            So if you want to broadcast what you're listening to on Spotify to anyone you will need to set up your own
+            So if you want to broadcast what you're listening to on Spotify to anyone you will need to set up your own{" "}
             <a href="https://github.com/MatievisTheKat/spotifysync-server" rel="noreferrer" target="_blank">
               SpotifySync Server
             </a>
