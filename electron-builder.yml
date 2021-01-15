@@ -14,9 +14,12 @@ win:
     - github
   target: nsis
   publisherName: "Matthew Stead"
+
 linux:
   publish:
     - github
+  target: deb
+
 mac:
   publish:
     - github
