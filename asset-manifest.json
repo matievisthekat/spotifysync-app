@@ -1,23 +1,23 @@
 {
   "files": {
-    "main.css": "/tunein-app/static/css/main.991a3a1a.chunk.css",
-    "main.js": "/tunein-app/static/js/main.a2e7c9f2.chunk.js",
-    "main.js.map": "/tunein-app/static/js/main.a2e7c9f2.chunk.js.map",
-    "runtime-main.js": "/tunein-app/static/js/runtime-main.d47935c2.js",
-    "runtime-main.js.map": "/tunein-app/static/js/runtime-main.d47935c2.js.map",
-    "static/js/2.75f77527.chunk.js": "/tunein-app/static/js/2.75f77527.chunk.js",
-    "static/js/2.75f77527.chunk.js.map": "/tunein-app/static/js/2.75f77527.chunk.js.map",
-    "static/js/3.bd8442d8.chunk.js": "/tunein-app/static/js/3.bd8442d8.chunk.js",
-    "static/js/3.bd8442d8.chunk.js.map": "/tunein-app/static/js/3.bd8442d8.chunk.js.map",
-    "index.html": "/tunein-app/index.html",
-    "static/css/main.991a3a1a.chunk.css.map": "/tunein-app/static/css/main.991a3a1a.chunk.css.map",
-    "static/js/2.75f77527.chunk.js.LICENSE.txt": "/tunein-app/static/js/2.75f77527.chunk.js.LICENSE.txt",
-    "static/media/diagram.e49a5711.jpg": "/tunein-app/static/media/diagram.e49a5711.jpg"
+    "main.css": "/spotifysync-app/static/css/main.991a3a1a.chunk.css",
+    "main.js": "/spotifysync-app/static/js/main.073b622a.chunk.js",
+    "main.js.map": "/spotifysync-app/static/js/main.073b622a.chunk.js.map",
+    "runtime-main.js": "/spotifysync-app/static/js/runtime-main.7c65dfc2.js",
+    "runtime-main.js.map": "/spotifysync-app/static/js/runtime-main.7c65dfc2.js.map",
+    "static/js/2.5affd7b0.chunk.js": "/spotifysync-app/static/js/2.5affd7b0.chunk.js",
+    "static/js/2.5affd7b0.chunk.js.map": "/spotifysync-app/static/js/2.5affd7b0.chunk.js.map",
+    "static/js/3.e35995a4.chunk.js": "/spotifysync-app/static/js/3.e35995a4.chunk.js",
+    "static/js/3.e35995a4.chunk.js.map": "/spotifysync-app/static/js/3.e35995a4.chunk.js.map",
+    "index.html": "/spotifysync-app/index.html",
+    "static/css/main.991a3a1a.chunk.css.map": "/spotifysync-app/static/css/main.991a3a1a.chunk.css.map",
+    "static/js/2.5affd7b0.chunk.js.LICENSE.txt": "/spotifysync-app/static/js/2.5affd7b0.chunk.js.LICENSE.txt",
+    "static/media/diagram.e49a5711.jpg": "/spotifysync-app/static/media/diagram.e49a5711.jpg"
   },
   "entrypoints": [
-    "static/js/runtime-main.d47935c2.js",
-    "static/js/2.75f77527.chunk.js",
+    "static/js/runtime-main.7c65dfc2.js",
+    "static/js/2.5affd7b0.chunk.js",
     "static/css/main.991a3a1a.chunk.css",
-    "static/js/main.a2e7c9f2.chunk.js"
+    "static/js/main.073b622a.chunk.js"
   ]
 }

@@ -1,6 +1,6 @@
 {
-  "short_name": "TuneIn",
-  "name": "TuneIn",
+  "short_name": "SpotifySync",
+  "name": "SpotifySync",
   "icons": [
     {
       "src": "favicon.ico",
