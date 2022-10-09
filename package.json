@@ -11,7 +11,7 @@
   "author": "Mathew Stead <matthew.stead@matievisthekat.dev>",
   "license": "GPL-3.0",
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^0.21.3",
     "dotenv": "^8.6.0",
     "electron-store": "^6.0.1",
     "electron-updater": "^4.4.1",
