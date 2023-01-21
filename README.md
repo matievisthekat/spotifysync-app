@@ -1,5 +1,7 @@
 # SpotifySync
 
+**:warning: this repository has been archived. if you want this project to be maintained please contact `matievisthekat@gmail.com` or fork this repo :warning:**
+
 A desktop app used to connect to any [SpotifySync Server](https://github.com/MatievisTheKat/spotifysync-server) via a HTTP url. TuneIn allows to you sync your Spotify client with any SpotifySync Server so that you can listen to the same music as the person running the server is listening to
 
 ## Installation
